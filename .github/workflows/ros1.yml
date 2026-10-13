@@ -17,6 +17,7 @@ jobs:
         shell: bash
     env:
       QT_QPA_PLATFORM: offscreen
+      PYTHONUNBUFFERED: '1'
     steps:
       - uses: actions/checkout@v4
       - name: Install ROS and plotting dependencies
@@ -39,7 +40,7 @@ jobs:
             mkdir -p "$result"
             roslaunch turtlesim_circle circle.launch amplitude_mode:="$mode" period:=8 amplitude:=1 duration:=8 bag_dir:="$result" > "$result/launch.log" 2>&1 &
             launch_pid=$!
-            trap 'kill -INT "$launch_pid" 2>/dev/null || true' EXIT
+            trap 'kill -INT "$launch_pid" 2>/dev/null || true; wait "$launch_pid" 2>/dev/null || true' EXIT
             # Wait for the controller to finish its motion window; startup
             # can vary on a busy runner. Never stop recording after a fixed
             # wall-clock delay that might truncate the circle.
