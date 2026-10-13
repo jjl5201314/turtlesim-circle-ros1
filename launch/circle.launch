@@ -1,0 +1,49 @@
+<launch>
+  <arg name="config" default="$(find turtlesim_circle)/config/circle.yaml"/>
+  <!-- Empty args preserve values loaded from YAML; explicit args override them. -->
+  <arg name="period" default=""/>
+  <arg name="amplitude" default=""/>
+  <arg name="amplitude_mode" default=""/>
+  <arg name="direction" default=""/>
+  <arg name="rate" default=""/>
+  <arg name="duration" default=""/>
+  <arg name="startup_delay" default=""/>
+  <arg name="pose_timeout" default=""/>
+  <arg name="record" default="true"/>
+  <arg name="bag_dir" default="$(eval optenv('ROS_HOME') or (env('HOME') + '/.ros'))"/>
+  <arg name="bag_prefix" default="circle"/>
+  <arg name="plot" default="false"/>
+  <arg name="graph" default="false"/>
+
+  <!-- Turtlesim does not publish /clock. -->
+  <param name="/use_sim_time" value="false"/>
+
+  <node pkg="turtlesim" type="turtlesim_node" name="turtlesim"
+        output="screen" required="true"/>
+
+  <node pkg="turtlesim_circle" type="circle_controller.py" name="circle_controller"
+        output="screen" required="true">
+    <rosparam command="load" file="$(arg config)"/>
+    <param if="$(eval arg('period') != '')" name="period" value="$(arg period)" type="double"/>
+    <param if="$(eval arg('amplitude') != '')" name="amplitude" value="$(arg amplitude)" type="double"/>
+    <param if="$(eval arg('amplitude_mode') != '')" name="amplitude_mode" value="$(arg amplitude_mode)" type="str"/>
+    <param if="$(eval arg('direction') != '')" name="direction" value="$(arg direction)" type="int"/>
+    <param if="$(eval arg('rate') != '')" name="rate" value="$(arg rate)" type="double"/>
+    <param if="$(eval arg('duration') != '')" name="duration" value="$(arg duration)" type="double"/>
+    <param if="$(eval arg('startup_delay') != '')" name="startup_delay" value="$(arg startup_delay)" type="double"/>
+    <param if="$(eval arg('pose_timeout') != '')" name="pose_timeout" value="$(arg pose_timeout)" type="double"/>
+    <param name="wait_for_recorder" value="$(arg record)" type="bool"/>
+  </node>
+
+  <!-- Custom bag_dir must exist. -o appends a timestamp; anon adds collision resistance. -->
+  <node if="$(arg record)" pkg="rosbag" type="record" name="circle_recorder"
+        output="screen" required="true"
+        args="--publish -o &quot;$(arg bag_dir)/$(arg bag_prefix)_$(anon run)&quot; /turtle1/cmd_vel /turtle1/pose">
+    <remap from="begin_write" to="/circle_recorder/begin_write"/>
+  </node>
+
+  <include file="$(find turtlesim_circle)/launch/visualize.launch">
+    <arg name="plot" value="$(arg plot)"/>
+    <arg name="graph" value="$(arg graph)"/>
+  </include>
+</launch>

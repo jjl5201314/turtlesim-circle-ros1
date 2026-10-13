@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>turtlesim_circle</name>
+  <version>1.0.0</version>
+  <description>Parametric turtlesim circles, rosbag recording, and Python data analysis.</description>
+  <maintainer email="323568206+jjl5201314@users.noreply.github.com">jjl5201314</maintainer>
+  <license>MIT</license>
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>rospy</depend>
+  <depend>geometry_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>turtlesim</depend>
+  <exec_depend>roslaunch</exec_depend>
+  <exec_depend>rosbag</exec_depend>
+  <exec_depend>rqt_plot</exec_depend>
+  <exec_depend>rqt_graph</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-matplotlib</exec_depend>
+  <test_depend>python3-nose</test_depend>
+  <export/>
+</package>

@@ -1,0 +1,82 @@
+name: ROS1 integration
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  noetic:
+    runs-on: ubuntu-latest
+    container: ros:noetic-ros-base-focal
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
+    env:
+      QT_QPA_PLATFORM: offscreen
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ROS and plotting dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends ros-noetic-turtlesim ros-noetic-rosbag ros-noetic-rqt-plot ros-noetic-rqt-graph python3-numpy python3-matplotlib python3-nose
+      - name: Build package
+        run: |
+          source /opt/ros/noetic/setup.bash
+          mkdir -p /tmp/catkin_ws/src
+          ln -s "$GITHUB_WORKSPACE" /tmp/catkin_ws/src/turtlesim_circle
+          cd /tmp/catkin_ws
+          catkin_make
+      - name: Record and analyze both amplitude modes
+        run: |
+          source /opt/ros/noetic/setup.bash
+          source /tmp/catkin_ws/devel/setup.bash
+          for mode in speed radius; do
+            result="$GITHUB_WORKSPACE/test-results/$mode"
+            mkdir -p "$result"
+            roslaunch turtlesim_circle circle.launch amplitude_mode:="$mode" period:=8 amplitude:=1 duration:=8 bag_dir:="$result" > "$result/launch.log" 2>&1 &
+            launch_pid=$!
+            trap 'kill -INT "$launch_pid" 2>/dev/null || true' EXIT
+            # Wait for the controller to finish its motion window; startup
+            # can vary on a busy runner. Never stop recording after a fixed
+            # wall-clock delay that might truncate the circle.
+            completed=false
+            for attempt in $(seq 1 60); do
+              if grep -q 'Duration elapsed; publishing zero velocity' "$result/launch.log"; then
+                completed=true
+                break
+              fi
+              if ! kill -0 "$launch_pid" 2>/dev/null; then
+                cat "$result/launch.log"
+                exit 1
+              fi
+              sleep 1
+            done
+            if [ "$completed" != true ]; then
+              cat "$result/launch.log"
+              echo 'Controller did not finish within 60 seconds' >&2
+              exit 1
+            fi
+            # Include a stationary tail before rosbag closes the file.
+            sleep 1
+            rosnode list > "$result/nodes.txt"
+            rostopic list -v > "$result/topics.txt"
+            rosparam get /circle_controller > "$result/parameters.yaml"
+            kill -INT "$launch_pid"
+            wait "$launch_pid"
+            trap - EXIT
+            bag=$(find "$result" -maxdepth 1 -name '*.bag' -print -quit)
+            test -n "$bag"
+            rosbag info "$bag" > "$result/bag-info.txt"
+            python3 scripts/analyze_bag.py --bag "$bag" --output-dir "$result/plots" --backend rosbag
+            python3 tests/check_recorded_run.py "$result/plots" "$mode"
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ros1-recordings-and-plots
+          path: test-results/
+          if-no-files-found: warn

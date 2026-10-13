@@ -1,0 +1,11 @@
+# A full revolution takes period seconds.
+period: 8.0
+# speed: amplitude is linear speed (distance units/s), radius: it is radius.
+amplitude: 1.0
+amplitude_mode: speed
+direction: 1              # +1 counterclockwise, -1 clockwise
+rate: 30.0                # publishing frequency in Hz, 2..1000 (startup-only)
+duration: 0.0             # 0 = continuous; otherwise move this many seconds
+startup_delay: 2.0        # zero-command baseline after dependencies are ready
+pose_timeout: 1.0         # stop when no valid pose arrives within this many seconds
+wait_for_recorder: false  # circle.launch sets this from its record argument

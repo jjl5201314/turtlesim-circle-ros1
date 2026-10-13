@@ -1,0 +1,4 @@
+# Standalone .bag analysis on Python 3.10+ (no ROS installation required).
+numpy>=1.23,<3
+matplotlib>=3.6,<4
+rosbags>=0.10,<0.12
