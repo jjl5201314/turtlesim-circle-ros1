@@ -317,6 +317,8 @@ def write_figures(recording, output_dir, synthetic=False):
         axes[-1].set_xlabel(x_label)
         fig.suptitle(title_prefix + "Commanded and reported velocity (original sample times)")
         fig.tight_layout()
+        # Older Matplotlib in ROS Noetic does not reserve suptitle space.
+        fig.subplots_adjust(top=0.88 if synthetic else 0.92)
         fig.savefig(output_dir / "velocity_vs_time.png")
         plt.close(fig)
 
@@ -331,6 +333,7 @@ def write_figures(recording, output_dir, synthetic=False):
         axes[-1].set_xlabel(x_label)
         fig.suptitle(title_prefix + "Turtlesim position and heading")
         fig.tight_layout()
+        fig.subplots_adjust(top=0.90 if synthetic else 0.94)
         fig.savefig(output_dir / "position_vs_time.png")
         plt.close(fig)
 
