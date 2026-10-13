@@ -75,6 +75,31 @@ jobs:
             python3 scripts/analyze_bag.py --bag "$bag" --output-dir "$result/plots" --backend rosbag
             python3 tests/check_recorded_run.py "$result/plots" "$mode"
           done
+      - name: Capture live rqt widgets and full ROS graph
+        run: |
+          source /opt/ros/noetic/setup.bash
+          source /tmp/catkin_ws/devel/setup.bash
+          result="$GITHUB_WORKSPACE/test-results/rqt"
+          mkdir -p "$result"
+          roslaunch turtlesim_circle circle.launch period:=8 amplitude:=1 duration:=24 startup_delay:=8 bag_dir:="$result" > "$result/launch.log" 2>&1 &
+          launch_pid=$!
+          trap 'kill -INT "$launch_pid" 2>/dev/null || true; wait "$launch_pid" 2>/dev/null || true' EXIT
+          # Each real plugin has its own ROS node. Qt offscreen saves the widget
+          # pixels without requiring a monitor or a desktop login on the runner.
+          for attempt in $(seq 1 25); do
+            if rosnode list 2>/dev/null | grep -q /circle_controller; then break; fi
+            sleep 1
+          done
+          python3 tests/capture_rqt.py plot "$result" > "$result/plot.log" 2>&1 &
+          plot_pid=$!
+          python3 tests/capture_rqt.py graph "$result" > "$result/graph.log" 2>&1 &
+          graph_pid=$!
+          wait "$graph_pid" || { cat "$result/graph.log"; exit 1; }
+          wait "$plot_pid" || { cat "$result/plot.log"; exit 1; }
+          cat "$result/plot.log" "$result/graph.log"
+          kill -INT "$launch_pid"
+          wait "$launch_pid"
+          trap - EXIT
       - uses: actions/upload-artifact@v4
         if: always()
         with:
