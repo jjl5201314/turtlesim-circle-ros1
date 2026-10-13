@@ -82,6 +82,14 @@ def main():
             (output / 'rqt_graph.dot').write_text(dot, encoding='utf-8')
         else:
             assert set(topics).issubset(plugin._widget._rosdata), 'Missing plotted topics'
+            # Keep both constant curves clear of the axes and include startup
+            # in the screenshot; the backend restores a short scrolling view.
+            plugin._widget.autoscroll_checkbox.setChecked(False)
+            plugin._data_plot.autoscroll(False)
+            plugin._data_plot.set_autoscale(x=False, y=False)
+            plugin._data_plot.set_xlim([0, 15])
+            plugin._data_plot.set_ylim([-0.1, 1.2])
+            plugin._data_plot.redraw()
         for _ in range(10):
             app.processEvents()
             time.sleep(0.03)
