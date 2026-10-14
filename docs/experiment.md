@@ -128,11 +128,11 @@ rosrun turtlesim_circle analyze_bag.py \
 - rqt_graph 通过 ROS 图信息显示关系；它本身并不是速度数据的必经节点。
 - `/rosout` 等日志连接和工具内部节点也属于实际 ROS 图。查看“全部关系”时保留它们；报告中若只截核心部分，应明确说明已裁剪或过滤。
 
-README 内的 Mermaid 仅表示设计预期，不能替代现场 rqt_graph 截图。
+README 内的 Mermaid 表示设计预期；另外提供真实 rqt_graph 插件生成的完整图，原始 DOT 和 ROS master 状态可在录包归档中核对。
 
 ## 验证状态与填写记录
 
-当前尚未运行真实 ROS 1 图形实验。合成 bag 用于检验文件读取、数据导出和画图流程；turtlesim 运行、现场录包和 rqt 截图仍需在目标环境完成。
+已在 GitHub Actions 的 ROS Noetic 容器中运行真实 turtlesim，并完成两种模式的录包和分析，结果见 [验证记录](verification.md) 与 [真实录包归档](../examples/README.md)。容器采用 Qt offscreen 模式，已运行真实 rqt_plot / rqt_graph 插件并保存界面图、完整 DOT 和 ROS master 状态。用户电脑桌面未实测，现场演示仍按本文命令打开标准窗口。合成 bag 另外用于检验文件读取、数据导出和数学模型。
 
 实测后补全以下记录：
 

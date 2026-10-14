@@ -13,15 +13,25 @@
 
 ## 曲线预览
 
-下图来自 `T=8, A=1` 的**合成 bag**，用于展示分析结果；没有运行 turtlesim，也不是 rqt 截图。图中标有 `SYNTHETIC DEMO`，实际 ROS 验证进度见 [验证记录](docs/verification.md)。
+下图来自 **GitHub Actions 中实际运行的 ROS Noetic / turtlesim**，两种模式均使用 `T=8, A=1`、运动 8 秒。已通过构建、录包、分析和轨迹闭环检查：[成功运行记录](https://github.com/jjl5201314/turtlesim-circle-ros1/actions/runs/38447877114)。这些曲线由 Python 读取录制 bag 后生成；真实 rqt 插件界面见下文。
+
+可直接下载仓库内的 [真实录包与分析结果](examples/ros1-recordings.zip)，来源、校验值与目录说明见 [examples/README.md](examples/README.md)。
 
 | 速度随时间变化（speed） | 位置随时间变化（speed） |
 | --- | --- |
-| ![合成示例：速度时间曲线](docs/images/speed_velocity.png) | ![合成示例：位置时间曲线](docs/images/speed_position.png) |
+| ![ROS 实测：速度时间曲线](docs/images/speed_velocity.png) | ![ROS 实测：位置时间曲线](docs/images/speed_position.png) |
 
 | 线速度幅值模式：R ≈ 1.273 | 半径幅值模式：R = 1 |
 | --- | --- |
-| ![合成示例：speed 模式 XY 轨迹](docs/images/speed_trajectory.png) | ![合成示例：radius 模式 XY 轨迹](docs/images/radius_trajectory.png) |
+| ![ROS 实测：speed 模式 XY 轨迹](docs/images/speed_trajectory.png) | ![ROS 实测：radius 模式 XY 轨迹](docs/images/radius_trajectory.png) |
+
+### 实际 rqt 界面
+
+下图为远端真实 ROS 运行中的 rqt 插件控件渲染（Qt offscreen），来源和复现方式见 [录包说明](examples/README.md)。rqt_plot 接收两条实时速度曲线；rqt_graph 展示全部节点/话题并保留日志连接。
+
+![rqt_plot 实时速度指令](docs/images/rqt_plot.png)
+
+![rqt_graph 全部节点与话题](docs/images/rqt_graph.png)
 
 ## 快速开始
 
@@ -226,7 +236,7 @@ python -m pip install -r requirements-analysis.txt pytest
 python -m pytest -q tests
 ```
 
-仓库还配置了 GitHub Actions：Python 测试，以及 ROS Noetic 容器中构建、运行两种模式、录包和分析的集成检查。运行状态以 [Actions 页面](https://github.com/jjl5201314/turtlesim-circle-ros1/actions) 为准；容器检查不替代人工检查 rqt 界面和截图。具体已核实的验证结果见 [验证记录](docs/verification.md)。
+仓库还配置了 GitHub Actions：Python 测试，以及 ROS Noetic 容器中构建、运行两种模式、录包和分析的集成检查。运行状态以 [Actions 页面](https://github.com/jjl5201314/turtlesim-circle-ros1/actions) 为准；集成检查还保存真实 rqt 插件界面图及完整 ROS 图；用户电脑上的桌面显示效果需在目标环境确认。具体已核实的验证结果见 [验证记录](docs/verification.md)。
 
 在 ROS 工作空间中也可以运行运动模型与控制器单元测试：
 
@@ -249,6 +259,7 @@ turtlesim_circle/
 ├── src/turtlesim_circle/motion.py
 ├── tests/                      # 参数、控制器和分析测试
 ├── docs/                       # 实验、验证记录与预览图
+├── examples/                   # 真实录包、曲线与 rqt 界面归档
 └── .github/workflows/          # Python / ROS Noetic 检查
 ```
 
