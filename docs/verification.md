@@ -49,6 +49,6 @@
 
 ## 代码托管
 
-GitHub 私有仓库：[jjl5201314/turtlesim-circle-ros1](https://github.com/jjl5201314/turtlesim-circle-ros1)。代码已上传，远端文件内容哈希与脚本可执行权限已核对；本地 Git 保留开发历史备份，并与远端 main 同步。
+GitHub 公开仓库：[jjl5201314/turtlesim-circle-ros1](https://github.com/jjl5201314/turtlesim-circle-ros1)，可直接访问和克隆。代码已上传，远端文件内容哈希与脚本可执行权限已核对；本地 Git 保留开发历史备份，并与远端 main 同步。
 
 真实实验请依照 [experiment.md](experiment.md) 运行，保存 `.bag`、参数、节点话题清单和 rqt 截图。

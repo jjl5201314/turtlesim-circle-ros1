@@ -37,7 +37,7 @@
 
 以下命令在**已安装 ROS Noetic** 的 Ubuntu 20.04 终端中执行。
 
-项目仓库：[jjl5201314/turtlesim-circle-ros1](https://github.com/jjl5201314/turtlesim-circle-ros1)。这是私有仓库，仅允许有权限的 GitHub 账号访问。也可以把本地 `turtlesim_circle` 文件夹直接放入 `~/catkin_ws/src/`，跳过克隆步骤。
+项目仓库：[jjl5201314/turtlesim-circle-ros1](https://github.com/jjl5201314/turtlesim-circle-ros1)。这是公开仓库，可直接访问和克隆。也可以把本地 `turtlesim_circle` 文件夹直接放入 `~/catkin_ws/src/`，跳过克隆步骤。
 
 ```bash
 sudo apt update
